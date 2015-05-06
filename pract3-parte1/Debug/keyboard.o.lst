@@ -1,0 +1,464 @@
+   1              		.cpu arm7tdmi
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 18, 4
+  11              		.file	"keyboard.c"
+  21              	.Ltext0:
+  22              		.file 1 "../keyboard.c"
+ 1790              		.align	2
+ 1791              		.global	keyboard_init
+ 1793              	keyboard_init:
+ 1794              	.LFB0:
+   1:../keyboard.c **** /*-------------------------------------------------------------------
+   2:../keyboard.c **** **
+   3:../keyboard.c **** **  Fichero:
+   4:../keyboard.c **** **    keyboard.c  10/6/2014
+   5:../keyboard.c **** **
+   6:../keyboard.c **** **    Estructura de Computadores
+   7:../keyboard.c **** **    Dpto. de Arquitectura de Computadores y Automática
+   8:../keyboard.c **** **    Facultad de Informática. Universidad Complutense de Madrid
+   9:../keyboard.c **** **
+  10:../keyboard.c **** **  Propósito:
+  11:../keyboard.c **** **    Contiene las implementaciones de las funciones
+  12:../keyboard.c **** **    para la gestión del teclado de la placa de prototipado
+  13:../keyboard.c **** **
+  14:../keyboard.c **** **  Notas de diseño:
+  15:../keyboard.c **** **
+  16:../keyboard.c **** **-----------------------------------------------------------------*/
+  17:../keyboard.c **** 
+  18:../keyboard.c **** #include "44b.h"
+  19:../keyboard.c **** #include "utils.h"
+  20:../keyboard.c **** #include "keyboard.h"
+  21:../keyboard.c **** 
+  22:../keyboard.c **** #define KEY_VALUE_MASK	0x0f
+  23:../keyboard.c **** 
+  24:../keyboard.c **** 
+  25:../keyboard.c **** static int key_read( void );
+  26:../keyboard.c **** static void keyboard_ISR(void) __attribute__ ((interrupt ("IRQ")));
+  27:../keyboard.c **** 
+  28:../keyboard.c **** void keyboard_init( void )
+  29:../keyboard.c **** {
+ 1795              		.loc 1 29 0
+ 1796              		.cfi_startproc
+ 1797              		@ Function supports interworking.
+ 1798              		@ args = 0, pretend = 0, frame = 0
+ 1799              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1800 0000 0DC0A0E1 		mov	ip, sp
+ 1801              	.LCFI0:
+ 1802              		.cfi_def_cfa_register 12
+ 1803 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1804 0008 04B04CE2 		sub	fp, ip, #4
+ 1805              		.cfi_offset 14, -8
+ 1806              		.cfi_offset 13, -12
+ 1807              		.cfi_offset 11, -16
+ 1808              	.LCFI1:
+ 1809              		.cfi_def_cfa 11, 4
+  30:../keyboard.c **** 
+  31:../keyboard.c **** 	/* Configurar puerto G para interrupciones del teclado */
+  32:../keyboard.c **** 
+  33:../keyboard.c **** 	/* Establecer ISR de teclado */
+  34:../keyboard.c **** 
+  35:../keyboard.c **** 
+  36:../keyboard.c **** 	/*Borrar interrupciones antes habilitar*/
+  37:../keyboard.c **** 
+  38:../keyboard.c **** 
+  39:../keyboard.c ****     /* Desenmascara la línea del teclado y el bit global */
+  40:../keyboard.c **** 
+  41:../keyboard.c **** }
+ 1810              		.loc 1 41 0
+ 1811 000c 0CD04BE2 		sub	sp, fp, #12
+ 1812 0010 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1813 0014 1EFF2FE1 		bx	lr
+ 1814              		.cfi_endproc
+ 1815              	.LFE0:
+ 1817              		.align	2
+ 1819              	key_read:
+ 1820              	.LFB1:
+  42:../keyboard.c **** 
+  43:../keyboard.c **** static int key_read( void )
+  44:../keyboard.c **** {
+ 1821              		.loc 1 44 0
+ 1822              		.cfi_startproc
+ 1823              		@ Function supports interworking.
+ 1824              		@ args = 0, pretend = 0, frame = 8
+ 1825              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1826 0018 0DC0A0E1 		mov	ip, sp
+ 1827              	.LCFI2:
+ 1828              		.cfi_def_cfa_register 12
+ 1829 001c 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1830 0020 04B04CE2 		sub	fp, ip, #4
+ 1831              		.cfi_offset 14, -8
+ 1832              		.cfi_offset 13, -12
+ 1833              		.cfi_offset 11, -16
+ 1834              	.LCFI3:
+ 1835              		.cfi_def_cfa 11, 4
+ 1836 0024 08D04DE2 		sub	sp, sp, #8
+  45:../keyboard.c **** 	int value;
+  46:../keyboard.c **** 	char temp;
+  47:../keyboard.c **** 
+  48:../keyboard.c **** 	/* leer linea 1 */
+  49:../keyboard.c **** 	temp = *(KEYBADDR+0xfd);
+ 1837              		.loc 1 49 0
+ 1838 0028 0C329FE5 		ldr	r3, .L24
+ 1839 002c 0030D3E5 		ldrb	r3, [r3, #0]
+ 1840 0030 11304BE5 		strb	r3, [fp, #-17]
+  50:../keyboard.c **** 	if(( temp & KEY_VALUE_MASK) != KEY_VALUE_MASK)
+ 1841              		.loc 1 50 0
+ 1842 0034 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1843 0038 0F3003E2 		and	r3, r3, #15
+ 1844 003c 0F0053E3 		cmp	r3, #15
+ 1845 0040 1800000A 		beq	.L3
+  51:../keyboard.c **** 	{
+  52:../keyboard.c **** 		if( temp == 0x0E )
+ 1846              		.loc 1 52 0
+ 1847 0044 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1848 0048 0E0053E3 		cmp	r3, #14
+ 1849 004c 0200001A 		bne	.L4
+  53:../keyboard.c **** 			value = 3;
+ 1850              		.loc 1 53 0
+ 1851 0050 0330A0E3 		mov	r3, #3
+ 1852 0054 10300BE5 		str	r3, [fp, #-16]
+ 1853 0058 100000EA 		b	.L5
+ 1854              	.L4:
+  54:../keyboard.c **** 		else if( temp == 0x0D )
+ 1855              		.loc 1 54 0
+ 1856 005c 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1857 0060 0D0053E3 		cmp	r3, #13
+ 1858 0064 0200001A 		bne	.L6
+  55:../keyboard.c **** 			value = 2;
+ 1859              		.loc 1 55 0
+ 1860 0068 0230A0E3 		mov	r3, #2
+ 1861 006c 10300BE5 		str	r3, [fp, #-16]
+ 1862 0070 0A0000EA 		b	.L5
+ 1863              	.L6:
+  56:../keyboard.c **** 		else if( temp == 0x0B )
+ 1864              		.loc 1 56 0
+ 1865 0074 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1866 0078 0B0053E3 		cmp	r3, #11
+ 1867 007c 0200001A 		bne	.L7
+  57:../keyboard.c **** 			value = 1;
+ 1868              		.loc 1 57 0
+ 1869 0080 0130A0E3 		mov	r3, #1
+ 1870 0084 10300BE5 		str	r3, [fp, #-16]
+ 1871 0088 040000EA 		b	.L5
+ 1872              	.L7:
+  58:../keyboard.c **** 		else if( temp == 0x07 )
+ 1873              		.loc 1 58 0
+ 1874 008c 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1875 0090 070053E3 		cmp	r3, #7
+ 1876 0094 0100001A 		bne	.L5
+  59:../keyboard.c **** 			value = 0;
+ 1877              		.loc 1 59 0
+ 1878 0098 0030A0E3 		mov	r3, #0
+ 1879 009c 10300BE5 		str	r3, [fp, #-16]
+ 1880              	.L5:
+  60:../keyboard.c **** 		return value;
+ 1881              		.loc 1 60 0
+ 1882 00a0 10301BE5 		ldr	r3, [fp, #-16]
+ 1883 00a4 600000EA 		b	.L8
+ 1884              	.L3:
+  61:../keyboard.c **** 	}
+  62:../keyboard.c **** 	
+  63:../keyboard.c **** 	/* linea 2 */
+  64:../keyboard.c **** 	temp = *(KEYBADDR+0xfb);
+ 1885              		.loc 1 64 0
+ 1886 00a8 90319FE5 		ldr	r3, .L24+4
+ 1887 00ac 0030D3E5 		ldrb	r3, [r3, #0]
+ 1888 00b0 11304BE5 		strb	r3, [fp, #-17]
+  65:../keyboard.c **** 	if(( temp & KEY_VALUE_MASK) != KEY_VALUE_MASK)
+ 1889              		.loc 1 65 0
+ 1890 00b4 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1891 00b8 0F3003E2 		and	r3, r3, #15
+ 1892 00bc 0F0053E3 		cmp	r3, #15
+ 1893 00c0 1800000A 		beq	.L9
+  66:../keyboard.c **** 	{
+  67:../keyboard.c **** 		if( temp == 0x0E )
+ 1894              		.loc 1 67 0
+ 1895 00c4 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1896 00c8 0E0053E3 		cmp	r3, #14
+ 1897 00cc 0200001A 		bne	.L10
+  68:../keyboard.c **** 			value = 7;
+ 1898              		.loc 1 68 0
+ 1899 00d0 0730A0E3 		mov	r3, #7
+ 1900 00d4 10300BE5 		str	r3, [fp, #-16]
+ 1901 00d8 100000EA 		b	.L11
+ 1902              	.L10:
+  69:../keyboard.c **** 		else if( temp == 0x0D )
+ 1903              		.loc 1 69 0
+ 1904 00dc 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1905 00e0 0D0053E3 		cmp	r3, #13
+ 1906 00e4 0200001A 		bne	.L12
+  70:../keyboard.c **** 			value = 6;
+ 1907              		.loc 1 70 0
+ 1908 00e8 0630A0E3 		mov	r3, #6
+ 1909 00ec 10300BE5 		str	r3, [fp, #-16]
+ 1910 00f0 0A0000EA 		b	.L11
+ 1911              	.L12:
+  71:../keyboard.c **** 		else if( temp == 0x0B )
+ 1912              		.loc 1 71 0
+ 1913 00f4 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1914 00f8 0B0053E3 		cmp	r3, #11
+ 1915 00fc 0200001A 		bne	.L13
+  72:../keyboard.c **** 			value = 5;
+ 1916              		.loc 1 72 0
+ 1917 0100 0530A0E3 		mov	r3, #5
+ 1918 0104 10300BE5 		str	r3, [fp, #-16]
+ 1919 0108 040000EA 		b	.L11
+ 1920              	.L13:
+  73:../keyboard.c **** 		else if( temp == 0x07 )
+ 1921              		.loc 1 73 0
+ 1922 010c 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1923 0110 070053E3 		cmp	r3, #7
+ 1924 0114 0100001A 		bne	.L11
+  74:../keyboard.c **** 			value = 4;
+ 1925              		.loc 1 74 0
+ 1926 0118 0430A0E3 		mov	r3, #4
+ 1927 011c 10300BE5 		str	r3, [fp, #-16]
+ 1928              	.L11:
+  75:../keyboard.c **** 		return value;
+ 1929              		.loc 1 75 0
+ 1930 0120 10301BE5 		ldr	r3, [fp, #-16]
+ 1931 0124 400000EA 		b	.L8
+ 1932              	.L9:
+  76:../keyboard.c **** 	}
+  77:../keyboard.c **** 	
+  78:../keyboard.c **** 	/* linea 3 */
+  79:../keyboard.c **** 	temp = *(KEYBADDR+0xf7);
+ 1933              		.loc 1 79 0
+ 1934 0128 14319FE5 		ldr	r3, .L24+8
+ 1935 012c 0030D3E5 		ldrb	r3, [r3, #0]
+ 1936 0130 11304BE5 		strb	r3, [fp, #-17]
+  80:../keyboard.c **** 	if(( temp & KEY_VALUE_MASK) != KEY_VALUE_MASK)
+ 1937              		.loc 1 80 0
+ 1938 0134 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1939 0138 0F3003E2 		and	r3, r3, #15
+ 1940 013c 0F0053E3 		cmp	r3, #15
+ 1941 0140 1800000A 		beq	.L14
+  81:../keyboard.c **** 	{
+  82:../keyboard.c **** 		if( temp == 0x0E )
+ 1942              		.loc 1 82 0
+ 1943 0144 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1944 0148 0E0053E3 		cmp	r3, #14
+ 1945 014c 0200001A 		bne	.L15
+  83:../keyboard.c **** 			value = 0xb;
+ 1946              		.loc 1 83 0
+ 1947 0150 0B30A0E3 		mov	r3, #11
+ 1948 0154 10300BE5 		str	r3, [fp, #-16]
+ 1949 0158 100000EA 		b	.L16
+ 1950              	.L15:
+  84:../keyboard.c **** 		else if( temp == 0x0D )
+ 1951              		.loc 1 84 0
+ 1952 015c 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1953 0160 0D0053E3 		cmp	r3, #13
+ 1954 0164 0200001A 		bne	.L17
+  85:../keyboard.c **** 			value = 0xa;
+ 1955              		.loc 1 85 0
+ 1956 0168 0A30A0E3 		mov	r3, #10
+ 1957 016c 10300BE5 		str	r3, [fp, #-16]
+ 1958 0170 0A0000EA 		b	.L16
+ 1959              	.L17:
+  86:../keyboard.c **** 		else if( temp == 0x0B )
+ 1960              		.loc 1 86 0
+ 1961 0174 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1962 0178 0B0053E3 		cmp	r3, #11
+ 1963 017c 0200001A 		bne	.L18
+  87:../keyboard.c **** 			value = 9;
+ 1964              		.loc 1 87 0
+ 1965 0180 0930A0E3 		mov	r3, #9
+ 1966 0184 10300BE5 		str	r3, [fp, #-16]
+ 1967 0188 040000EA 		b	.L16
+ 1968              	.L18:
+  88:../keyboard.c **** 		else if( temp == 0x07 )
+ 1969              		.loc 1 88 0
+ 1970 018c 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1971 0190 070053E3 		cmp	r3, #7
+ 1972 0194 0100001A 		bne	.L16
+  89:../keyboard.c **** 			value = 8;
+ 1973              		.loc 1 89 0
+ 1974 0198 0830A0E3 		mov	r3, #8
+ 1975 019c 10300BE5 		str	r3, [fp, #-16]
+ 1976              	.L16:
+  90:../keyboard.c **** 		return value;
+ 1977              		.loc 1 90 0
+ 1978 01a0 10301BE5 		ldr	r3, [fp, #-16]
+ 1979 01a4 200000EA 		b	.L8
+ 1980              	.L14:
+  91:../keyboard.c **** 	}
+  92:../keyboard.c **** 	
+  93:../keyboard.c **** 	/* linea 4 */
+  94:../keyboard.c **** 	temp = *(KEYBADDR+0xef);
+ 1981              		.loc 1 94 0
+ 1982 01a8 98309FE5 		ldr	r3, .L24+12
+ 1983 01ac 0030D3E5 		ldrb	r3, [r3, #0]
+ 1984 01b0 11304BE5 		strb	r3, [fp, #-17]
+  95:../keyboard.c **** 	if(( temp & KEY_VALUE_MASK) != KEY_VALUE_MASK)
+ 1985              		.loc 1 95 0
+ 1986 01b4 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1987 01b8 0F3003E2 		and	r3, r3, #15
+ 1988 01bc 0F0053E3 		cmp	r3, #15
+ 1989 01c0 1800000A 		beq	.L19
+  96:../keyboard.c **** 	{
+  97:../keyboard.c **** 		if( temp == 0x0E )
+ 1990              		.loc 1 97 0
+ 1991 01c4 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 1992 01c8 0E0053E3 		cmp	r3, #14
+ 1993 01cc 0200001A 		bne	.L20
+  98:../keyboard.c **** 			value = 0xf;
+ 1994              		.loc 1 98 0
+ 1995 01d0 0F30A0E3 		mov	r3, #15
+ 1996 01d4 10300BE5 		str	r3, [fp, #-16]
+ 1997 01d8 100000EA 		b	.L21
+ 1998              	.L20:
+  99:../keyboard.c **** 		else if( temp == 0x0D )
+ 1999              		.loc 1 99 0
+ 2000 01dc 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 2001 01e0 0D0053E3 		cmp	r3, #13
+ 2002 01e4 0200001A 		bne	.L22
+ 100:../keyboard.c **** 			value = 0xe;
+ 2003              		.loc 1 100 0
+ 2004 01e8 0E30A0E3 		mov	r3, #14
+ 2005 01ec 10300BE5 		str	r3, [fp, #-16]
+ 2006 01f0 0A0000EA 		b	.L21
+ 2007              	.L22:
+ 101:../keyboard.c **** 		else if( temp == 0x0B )
+ 2008              		.loc 1 101 0
+ 2009 01f4 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 2010 01f8 0B0053E3 		cmp	r3, #11
+ 2011 01fc 0200001A 		bne	.L23
+ 102:../keyboard.c **** 			value = 0xd;
+ 2012              		.loc 1 102 0
+ 2013 0200 0D30A0E3 		mov	r3, #13
+ 2014 0204 10300BE5 		str	r3, [fp, #-16]
+ 2015 0208 040000EA 		b	.L21
+ 2016              	.L23:
+ 103:../keyboard.c **** 		else if( temp == 0x07 )
+ 2017              		.loc 1 103 0
+ 2018 020c 11305BE5 		ldrb	r3, [fp, #-17]	@ zero_extendqisi2
+ 2019 0210 070053E3 		cmp	r3, #7
+ 2020 0214 0100001A 		bne	.L21
+ 104:../keyboard.c **** 			value = 0xc;
+ 2021              		.loc 1 104 0
+ 2022 0218 0C30A0E3 		mov	r3, #12
+ 2023 021c 10300BE5 		str	r3, [fp, #-16]
+ 2024              	.L21:
+ 105:../keyboard.c **** 		return value;
+ 2025              		.loc 1 105 0
+ 2026 0220 10301BE5 		ldr	r3, [fp, #-16]
+ 2027 0224 000000EA 		b	.L8
+ 2028              	.L19:
+ 106:../keyboard.c **** 	}
+ 107:../keyboard.c **** 	return -1;
+ 2029              		.loc 1 107 0
+ 2030 0228 0030E0E3 		mvn	r3, #0
+ 2031              	.L8:
+ 108:../keyboard.c **** }
+ 2032              		.loc 1 108 0
+ 2033 022c 0300A0E1 		mov	r0, r3
+ 2034 0230 0CD04BE2 		sub	sp, fp, #12
+ 2035 0234 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2036 0238 1EFF2FE1 		bx	lr
+ 2037              	.L25:
+ 2038              		.align	2
+ 2039              	.L24:
+ 2040 023c FD000006 		.word	100663549
+ 2041 0240 FB000006 		.word	100663547
+ 2042 0244 F7000006 		.word	100663543
+ 2043 0248 EF000006 		.word	100663535
+ 2044              		.cfi_endproc
+ 2045              	.LFE1:
+ 2047              		.align	2
+ 2049              	keyboard_ISR:
+ 2050              	.LFB2:
+ 109:../keyboard.c **** 
+ 110:../keyboard.c **** static void keyboard_ISR(void)
+ 111:../keyboard.c **** {
+ 2051              		.loc 1 111 0
+ 2052              		.cfi_startproc
+ 2053              		@ Interrupt Service Routine.
+ 2054              		@ args = 0, pretend = 0, frame = 8
+ 2055              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2056 024c 04C02DE5 		str	ip, [sp, #-4]!
+ 2057 0250 0DC0A0E1 		mov	ip, sp
+ 2058              	.LCFI4:
+ 2059              		.cfi_def_cfa_register 12
+ 2060 0254 0FD82DE9 		stmfd	sp!, {r0, r1, r2, r3, fp, ip, lr, pc}
+ 2061 0258 04B04CE2 		sub	fp, ip, #4
+ 2062              		.cfi_offset 14, -8
+ 2063              		.cfi_offset 13, -12
+ 2064              		.cfi_offset 11, -16
+ 2065              		.cfi_offset 3, -20
+ 2066              		.cfi_offset 2, -24
+ 2067              		.cfi_offset 1, -28
+ 2068              		.cfi_offset 0, -32
+ 2069              	.LCFI5:
+ 2070              		.cfi_def_cfa 11, 4
+ 2071 025c 08D04DE2 		sub	sp, sp, #8
+ 112:../keyboard.c **** 	int key;
+ 113:../keyboard.c **** 
+ 114:../keyboard.c **** 	/* Eliminar rebotes de presion */
+ 115:../keyboard.c **** 	Delay(200);
+ 2072              		.loc 1 115 0
+ 2073 0260 C800A0E3 		mov	r0, #200
+ 2074 0264 FEFFFFEB 		bl	Delay
+ 116:../keyboard.c **** 
+ 117:../keyboard.c **** 	/* Escaneo de tecla */
+ 118:../keyboard.c **** 	key = key_read();
+ 2075              		.loc 1 118 0
+ 2076 0268 6AFFFFEB 		bl	key_read
+ 2077 026c 20000BE5 		str	r0, [fp, #-32]
+ 119:../keyboard.c **** 
+ 120:../keyboard.c **** 	// En caso de error, key = -1
+ 121:../keyboard.c **** 	// COMPLETAR !!!!
+ 122:../keyboard.c **** 
+ 123:../keyboard.c **** 	/* Esperar a que la tecla se suelte */
+ 124:../keyboard.c **** 	while (!(rPDATG & 0x02));
+ 2078              		.loc 1 124 0
+ 2079 0270 0000A0E1 		mov	r0, r0	@ nop
+ 2080              	.L27:
+ 2081              		.loc 1 124 0 is_stmt 0 discriminator 1
+ 2082 0274 24309FE5 		ldr	r3, .L28
+ 2083 0278 003093E5 		ldr	r3, [r3, #0]
+ 2084 027c 023003E2 		and	r3, r3, #2
+ 2085 0280 000053E3 		cmp	r3, #0
+ 2086 0284 FAFFFF0A 		beq	.L27
+ 125:../keyboard.c **** 
+ 126:../keyboard.c ****     /* Eliminar rebotes de depreson */
+ 127:../keyboard.c ****     Delay(200);
+ 2087              		.loc 1 127 0 is_stmt 1
+ 2088 0288 C800A0E3 		mov	r0, #200
+ 2089 028c FEFFFFEB 		bl	Delay
+ 128:../keyboard.c **** 
+ 129:../keyboard.c ****     /* Borrar interrupciones pendientes */
+ 130:../keyboard.c **** 
+ 131:../keyboard.c **** }
+ 2090              		.loc 1 131 0
+ 2091 0290 1CD04BE2 		sub	sp, fp, #28
+ 2092 0294 0F689DE8 		ldmfd	sp, {r0, r1, r2, r3, fp, sp, lr}
+ 2093 0298 04C09DE4 		ldmfd	sp!, {ip}
+ 2094 029c 04F05EE2 		subs	pc, lr, #4
+ 2095              	.L29:
+ 2096              		.align	2
+ 2097              	.L28:
+ 2098 02a0 4400D201 		.word	30539844
+ 2099              		.cfi_endproc
+ 2100              	.LFE2:
+ 2102              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 keyboard.c
+C:\Users\JOSIGN~1\AppData\Local\Temp\cctN5hPM.s:1790   .text:00000000 $a
+C:\Users\JOSIGN~1\AppData\Local\Temp\cctN5hPM.s:1793   .text:00000000 keyboard_init
+C:\Users\JOSIGN~1\AppData\Local\Temp\cctN5hPM.s:1819   .text:00000018 key_read
+C:\Users\JOSIGN~1\AppData\Local\Temp\cctN5hPM.s:2040   .text:0000023c $d
+C:\Users\JOSIGN~1\AppData\Local\Temp\cctN5hPM.s:2047   .text:0000024c $a
+C:\Users\JOSIGN~1\AppData\Local\Temp\cctN5hPM.s:2049   .text:0000024c keyboard_ISR
+C:\Users\JOSIGN~1\AppData\Local\Temp\cctN5hPM.s:2098   .text:000002a0 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+Delay
