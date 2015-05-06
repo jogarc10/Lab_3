@@ -46,7 +46,7 @@ static int key_read( void )
 	char temp;
 
 	/* leer linea 1 */
-	temp = *(KEYBADDR+0xfd);
+	temp = *(KEYBADDR+0xfd);		// KEYBADDR + 1111 1101
 	temp = temp & KEY_VALUE_MASK;
 	if (temp  != KEY_VALUE_MASK)
 	{
@@ -62,7 +62,7 @@ static int key_read( void )
 	}
 	
 	/* linea 2 */
-	temp = *(KEYBADDR+0xfb);
+	temp = *(KEYBADDR+0xfb);		// KEYBADDR + 1111 1011
 	temp = temp & KEY_VALUE_MASK;
 	if (temp  != KEY_VALUE_MASK)
 	{
@@ -78,7 +78,7 @@ static int key_read( void )
 	}
 	
 	/* linea 3 */
-	temp = *(KEYBADDR+0xf7);
+	temp = *(KEYBADDR+0xf7);		// KEYBADDR + 1111 0111
 	temp = temp & KEY_VALUE_MASK;
 	if (temp  != KEY_VALUE_MASK)
 	{
@@ -94,7 +94,7 @@ static int key_read( void )
 	}
 	
 	/* linea 4 */
-	temp = *(KEYBADDR+0xef);
+	temp = *(KEYBADDR+0xef);		// KEYBADDR + 1110 1111
 	temp = temp & KEY_VALUE_MASK;
 	if (temp  != KEY_VALUE_MASK)
 	{
