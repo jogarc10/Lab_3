@@ -1,31 +1,35 @@
 /*-------------------------------------------------------------------
 **
 **  Fichero:
-**    main.c  10/6/2014
+**    timer.h  10/6/2014
 **
 **    Estructura de Computadores
 **    Dpto. de Arquitectura de Computadores y Automática
 **    Facultad de Informática. Universidad Complutense de Madrid
 **
 **  Propósito:
-**    Implementa el juego del mastermind
+**    Contiene las definiciones de los prototipos de funciones
+**    para la gestión del timer 0 del chip S3C44BOX
 **
 **  Notas de diseño:
 **
 **-----------------------------------------------------------------*/
 
 #include "44b.h"
-#include "utils.h"
 #include "leds.h"
-#include "D8Led.h"
+#include "D8led.h"
 #include "timer.h"
-#include "keyboard.h"
 
-int main(void)
-{	
 
-	Delay(0);
-		
-	while(1);
-	return 0;
+
+static void timer_ISR(void) __attribute__ ((interrupt ("IRQ")));
+
+static void timer_ISR( void )
+{
+	
+}
+
+void timer_init(void)
+{
+
 }

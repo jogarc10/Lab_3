@@ -1,31 +1,24 @@
 /*-------------------------------------------------------------------
 **
 **  Fichero:
-**    main.c  10/6/2014
+**    utils.h  10/6/2014
 **
 **    Estructura de Computadores
 **    Dpto. de Arquitectura de Computadores y Automática
 **    Facultad de Informática. Universidad Complutense de Madrid
 **
 **  Propósito:
-**    Implementa el juego del mastermind
+**    Contiene las definiciones de los prototipos de funciones
+**    auxiliares
 **
 **  Notas de diseño:
+**    Equivale al fichero homónimo usado en Fundamentos de Computadores 
 **
 **-----------------------------------------------------------------*/
 
-#include "44b.h"
-#include "utils.h"
-#include "leds.h"
-#include "D8Led.h"
-#include "timer.h"
-#include "keyboard.h"
+#ifndef UTILS_H_
+#define UTILS_H_
 
-int main(void)
-{	
+void Delay( int time );
 
-	Delay(0);
-		
-	while(1);
-	return 0;
-}
+#endif
