@@ -59,7 +59,7 @@ start:
 
 	/* Habilita linea IRQ del CPSR */
 	mrs r0, cpsr
-	bic r0, r0, #0x80
+	bic r0, r0, #0x80	// 1000 0000
 	msr cpsr_c, r0
 	
 	/* Desde modo SVC inicializa los SP de todos los modos de ejecución privilegiados */
@@ -80,7 +80,47 @@ End:
     B End
 
 InitStacks:
-	@ Completar
+
+	// Iniciar Stacks
+	// FIQMODE
+
+	mrs r0, cpsr 			// cargar registro de estado
+	bic r0, #MODEMASK		// Borrar bits M[4:0]
+	orr	r1, r0, #FIQMODE	// Poner bits (M[4:0]) del nuevo modo
+	msr cpsr_c, r1			// pasar al nuevo modo
+	ldr sp, =FIQSTACK		// cargar stack del modo
+
+	// IRQMODE
+
+	mrs r0, cpsr 			// cargar registro de estado
+	bic r0, #MODEMASK		// Borrar bits M[4:0]
+	orr	r1, r0, #IRQMODE	// Poner bits (M[4:0]) del nuevo modo
+	msr cpsr_c, r1			// pasar al nuevo modo
+	ldr sp, =IRQSTACK		// cargar stack del modo
+
+	// ABTMODE
+
+	mrs r0, cpsr 			// cargar registro de estado
+	bic r0, #MODEMASK		// Borrar bits M[4:0]
+	orr	r1, r0, #ABTMODE	// Poner bits (M[4:0]) del nuevo modo
+	msr cpsr_c, r1			// pasar al nuevo modo
+	ldr sp, =ABTSTACK		// cargar stack del modo
+
+	// UNDMODE
+
+	mrs r0, cpsr 			// cargar registro de estado
+	bic r0, #MODEMASK		// Borrar bits M[4:0]
+	orr	r1, r0, #UNDMODE	// Poner bits (M[4:0]) del nuevo modo
+	msr cpsr_c, r1			// pasar al nuevo modo
+	ldr sp, =UNDSTACK		// cargar stack del modo
+
+	// Volver modo SVCMODE desde el que se llamó
+
+	mrs r0, cpsr 			// cargar registro de estado
+	bic r0, #MODEMASK		// Borrar bits M[4:0]
+	orr	r1, r0, #SVCMODE	// Poner bits (M[4:0]) del nuevo modo
+	msr cpsr_c, r1			// pasar al nuevo modo
+
     mov pc, lr
 
 	.end
